@@ -52,18 +52,20 @@ func (self *Screen) refresh(buff *Buffer) {
       buff.styles.BottomPadding = paddings[2]
       buff.styles.LeftPadding = paddings[3]
     default:
-      fmt.Errorf("The padding property cannot accept more than 4 items\n")
-      return
+      panic(fmt.Errorf("The padding property cannot accept more than 4 items\n"))
     }
   } else {
-    fmt.Errorf("Could not convert paddings to int\n")
-    return
+    panic(fmt.Errorf("Could not convert paddings to int\n"))
   }
 
   // Show on screen
   defer func() {
     for i := 0; i < buff.styles.H; i++ {
-      line := buff.buff[i]
+      line := ""
+
+      if len(buff.buff) > i {
+        line = buff.buff[i]
+      }
 
       // Fill line with whitespaces if its width is less than the buffer's
       if len(line) < buff.styles.W {
@@ -96,8 +98,7 @@ func (self *Screen) refresh(buff *Buffer) {
         }
 
       default:
-        fmt.Errorf("Type '%v' is not acceptable\n", child)
-        return
+        panic(fmt.Errorf("Type '%v' is not accepted as a child\n", child))
     }
   }
 

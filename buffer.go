@@ -49,7 +49,7 @@ func (self *Buffer) Add(item interface {}) {
     return
   }
 
-  _ = fmt.Errorf("'%v' is not accepted", item)
+  panic(fmt.Errorf("'%v' is not accepted as a child", item))
 }
 
 func (self *Buffer) Refresh() {
