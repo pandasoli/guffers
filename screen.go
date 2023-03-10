@@ -21,8 +21,6 @@ func (self *Screen) Add(buff *Buffer) {
 func (self *Screen) refresh(buff *Buffer) {
   // Set old/final styles equals current styles
   buff.styles = buff.Styles
-  buff.styles.CompX = buff.styles.X
-  buff.styles.CompY = buff.styles.Y
 
   // Clear Buffer's buffer
   buff.buff = []string {}
@@ -32,7 +30,11 @@ func (self *Screen) refresh(buff *Buffer) {
 
   // Show on screen
   defer func() {
-    for i := 0; i < buff.styles.H; i++ {
+    if buff.parent != nil {
+      return
+    }
+
+    for i := 0; i < buff.styles.CompH; i++ {
       line := ""
 
       if len(buff.buff) > i {
@@ -40,8 +42,8 @@ func (self *Screen) refresh(buff *Buffer) {
       }
 
       // Fill line with whitespaces if its width is less than the buffer's
-      if len(line) < buff.styles.W {
-        line += strings.Repeat(" ", buff.styles.W - len(line))
+      if len(line) < buff.styles.CompW {
+        line += strings.Repeat(" ", buff.styles.CompW - len(line))
       }
 
       line =
@@ -55,7 +57,7 @@ func (self *Screen) refresh(buff *Buffer) {
   }()
 
   // Loading children
-  usable_w := buff.styles.W - (buff.styles.LeftPadding + buff.styles.RightPadding)
+  usable_w := buff.styles.CompW - (buff.styles.LeftPadding + buff.styles.RightPadding)
 
   for _, child := range buff.Children {
     switch child := child.(type) {
@@ -71,17 +73,27 @@ func (self *Screen) refresh(buff *Buffer) {
       }
 
     case *Buffer:
-      child.styles.W = usable_w
-      child.Styles.W = usable_w
+      child.Styles.process_compounds()
+      child.Styles.CompW = usable_w - (child.Styles.LeftMargin + child.Styles.RightMargin)
       child.Refresh()
+
+      for range make([]int, child.Styles.TopMargin) {
+        buff.buff = append(buff.buff, "")
+      }
 
       for _, line := range child.buff {
         line =
+          strings.Repeat(" ", child.Styles.LeftMargin) + // Create child's left margin
           fmt.Sprintf("\033[%d;4%d;3%dm", child.styles.FontStyle, child.styles.BgCl, child.styles.Cl) + // Set child's color
           line +
-          fmt.Sprintf("\033[%d;4%d;3%dm", buff.styles.FontStyle, buff.styles.BgCl, buff.styles.Cl) // Set parent's color
+          fmt.Sprintf("\033[%d;4%d;3%dm", buff.styles.FontStyle, buff.styles.BgCl, buff.styles.Cl) + // Set parent's color
+          strings.Repeat(" ", child.Styles.RightMargin) // Create child's right margin
 
         buff.buff = append(buff.buff, line)
+      }
+
+      for range make([]int, child.Styles.BottomMargin) {
+        buff.buff = append(buff.buff, "")
       }
 
     default:
@@ -116,8 +128,8 @@ func (self *Screen) End() {
   yest := 0
 
   for _, buff := range self.buffs {
-    if buff.styles.CompY + buff.styles.H > yest {
-      yest = buff.styles.CompY + buff.styles.H
+    if buff.styles.CompY + buff.styles.CompH > yest {
+      yest = buff.styles.CompY + buff.styles.CompH
     }
   }
 
