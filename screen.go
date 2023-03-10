@@ -28,39 +28,7 @@ func (self *Screen) refresh(buff *Buffer) {
   buff.buff = []string {}
 
   // Load properties
-  paddings := strings.Split(buff.styles.Padding, " ")
-  if paddings, ok := strArr2IntArr(paddings); ok {
-    switch len(paddings) {
-    case 1:
-      buff.styles.TopPadding = paddings[0]
-      buff.styles.RightPadding = paddings[0]
-      buff.styles.BottomPadding = paddings[0]
-      buff.styles.LeftPadding = paddings[0]
-    case 2:
-      buff.styles.TopPadding = paddings[0]
-      buff.styles.RightPadding = paddings[1]
-      buff.styles.BottomPadding = paddings[0]
-      buff.styles.LeftPadding = paddings[1]
-    case 3:
-      buff.styles.TopPadding = paddings[0]
-      buff.styles.RightPadding = paddings[1]
-      buff.styles.BottomPadding = paddings[2]
-      buff.styles.LeftPadding = paddings[1]
-    case 4:
-      buff.styles.TopPadding = paddings[0]
-      buff.styles.RightPadding = paddings[1]
-      buff.styles.BottomPadding = paddings[2]
-      buff.styles.LeftPadding = paddings[3]
-    default:
-      panic(fmt.Errorf("The padding property cannot accept more than 4 items\n"))
-    }
-  } else {
-    // panic(fmt.Errorf("Could not convert paddings to int\n"))
-    buff.styles.TopPadding = 0
-    buff.styles.RightPadding = 0
-    buff.styles.BottomPadding = 0
-    buff.styles.LeftPadding = 0
-  }
+  buff.styles.process_compounds()
 
   // Show on screen
   defer func() {

@@ -2,26 +2,6 @@ package guffers
 import "fmt"
 
 
-type Props struct {
-  W, H,
-  CompW, CompH,
-  X, Y,
-  CompX, CompY,
-  Scroll,
-
-  BgCl, FontStyle, Cl,
-
-  TopPadding, RightPadding,
-  BottomPadding, LeftPadding int
-
-  // abs - absolute (can move free inside the parent)
-  // rel - relative (cannot move)
-  // out - outside (can move free inside the screen)
-  Pos,
-
-  Padding string
-}
-
 type Buffer struct {
   // This only accepts *Buffer and *string
   Children []interface {}
