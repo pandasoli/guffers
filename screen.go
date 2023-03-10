@@ -55,7 +55,11 @@ func (self *Screen) refresh(buff *Buffer) {
       panic(fmt.Errorf("The padding property cannot accept more than 4 items\n"))
     }
   } else {
-    panic(fmt.Errorf("Could not convert paddings to int\n"))
+    // panic(fmt.Errorf("Could not convert paddings to int\n"))
+    buff.styles.TopPadding = 0
+    buff.styles.RightPadding = 0
+    buff.styles.BottomPadding = 0
+    buff.styles.LeftPadding = 0
   }
 
   // Show on screen
@@ -72,10 +76,13 @@ func (self *Screen) refresh(buff *Buffer) {
         line += strings.Repeat(" ", buff.styles.W - len(line))
       }
 
-      fmt.Printf("\033[%d;%dH", buff.styles.CompY + i, buff.styles.CompX) // Go to position
-      fmt.Printf("\033[%d;4%d;3%dm", buff.styles.FontStyle, buff.styles.BgCl, buff.styles.Cl) // Set colors
-      fmt.Printf("%s", line) // Print buffer's line
-      fmt.Printf("\033[0m") // Reset color
+      line =
+        fmt.Sprintf("\033[%d;%dH", buff.styles.CompY + i, buff.styles.CompX) + // Set position
+        fmt.Sprintf("\033[%d;4%d;3%dm", buff.styles.FontStyle, buff.styles.BgCl, buff.styles.Cl) + // Set colors
+        line + // Print buffer's line
+        "\033[0m" // Reset color
+
+      fmt.Print(line)
     }
   }()
 
@@ -83,22 +90,34 @@ func (self *Screen) refresh(buff *Buffer) {
   usable_w := buff.styles.W - (buff.styles.LeftPadding + buff.styles.RightPadding)
 
   for _, child := range buff.Children {
-    switch child.(type) {
-      case *string:
-        if child, ok := child.(*string); ok {
-          for i := 0; i < len(*child); i += usable_w {
-            line := (*child)[i:]
+    switch child := child.(type) {
+    case *string:
+      for i := 0; i < len(*child); i += usable_w {
+        line := (*child)[i:]
 
-            if len(line) > usable_w {
-              line = line[:usable_w]
-            }
-
-            buff.buff = append(buff.buff, line)
-          }
+        if len(line) > usable_w {
+          line = line[:usable_w]
         }
 
-      default:
-        panic(fmt.Errorf("Type '%v' is not accepted as a child\n", child))
+        buff.buff = append(buff.buff, line)
+      }
+
+    case *Buffer:
+      child.styles.W = usable_w
+      child.Styles.W = usable_w
+      child.Refresh()
+
+      for _, line := range child.buff {
+        line =
+          fmt.Sprintf("\033[%d;4%d;3%dm", child.styles.FontStyle, child.styles.BgCl, child.styles.Cl) + // Set child's color
+          line +
+          fmt.Sprintf("\033[%d;4%d;3%dm", buff.styles.FontStyle, buff.styles.BgCl, buff.styles.Cl) // Set parent's color
+
+        buff.buff = append(buff.buff, line)
+      }
+
+    default:
+      panic(fmt.Errorf("Type '%v' is not accepted as a child\n", child))
     }
   }
 

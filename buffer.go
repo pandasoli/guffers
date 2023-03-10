@@ -4,6 +4,7 @@ import "fmt"
 
 type Props struct {
   W, H,
+  CompW, CompH,
   X, Y,
   CompX, CompY,
   Scroll,

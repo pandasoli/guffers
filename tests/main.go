@@ -12,6 +12,7 @@ func main() {
     Styles: guffers.Props {
       BgCl: 2,
       Cl: 1,
+      Padding: "0 4",
     },
     Children: []interface {} {
       &lorem2,
@@ -21,7 +22,7 @@ func main() {
   mainbuff1 := guffers.Buffer {
     Styles: guffers.Props {
       W: 60,
-      H: 6,
+      H: 10,
       X: 4,
       Y: 2,
       BgCl: 7,
