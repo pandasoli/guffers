@@ -12,8 +12,13 @@ func main() {
     Styles: guffers.Props {
       BgCl: 2,
       Cl: 1,
+      CompX: 10,
+      CompY: 4,
+      CompW: 50,
+      CompH: 10,
       Padding: "0 4",
       Margin: "1 2",
+      Pos: "abs",
     },
     Children: []interface {} {
       &lorem2,

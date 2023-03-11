@@ -22,8 +22,7 @@ type Props struct {
   BottomMargin, LeftMargin int
 
   // abs - absolute (can move free inside the parent)
-  // rel - relative (cannot move)
-  // out - outside (can move free inside the screen)
+  // rel - relative (cannot move around)
   Pos,
 
   Padding, Margin string
@@ -43,20 +42,20 @@ func (self *Props) process_compounds() {
       self.RightPadding = paddings[1]
       self.BottomPadding = paddings[0]
       self.LeftPadding = paddings[1]
-    case 3:  
+    case 3:
       self.TopPadding = paddings[0]
       self.RightPadding = paddings[1]
       self.BottomPadding = paddings[2]
       self.LeftPadding = paddings[1]
-    case 4:  
+    case 4:
       self.TopPadding = paddings[0]
       self.RightPadding = paddings[1]
       self.BottomPadding = paddings[2]
       self.LeftPadding = paddings[3]
     default:
       panic(fmt.Errorf("The padding property cannot accept more than 4 items\n"))
-    }    
-  } else { 
+    }
+  } else {
     // panic(fmt.Errorf("Could not convert paddings to int\n"))
     self.TopPadding = 0
     self.RightPadding = 0
@@ -72,29 +71,33 @@ func (self *Props) process_compounds() {
       self.RightMargin = margins[0]
       self.BottomMargin = margins[0]
       self.LeftMargin = margins[0]
-    case 2:       
+    case 2:
       self.TopMargin = margins[0]
       self.RightMargin = margins[1]
       self.BottomMargin = margins[0]
       self.LeftMargin = margins[1]
-    case 3:            
-      self.TopMargin = margins[0] 
+    case 3:
+      self.TopMargin = margins[0]
       self.RightMargin = margins[1]
       self.BottomMargin = margins[2]
-      self.LeftMargin = margins[1] 
-    case 4:            
+      self.LeftMargin = margins[1]
+    case 4:
       self.TopMargin = margins[0]
       self.RightMargin = margins[1]
       self.BottomMargin = margins[2]
       self.LeftMargin = margins[3]
-    default:    
+    default:
       panic(fmt.Errorf("The padding property cannot accept more than 4 items\n"))
-    }        
-  } else {     
+    }
+  } else {
     // panic(fmt.Errorf("Could not convert paddings to int\n"))
     self.TopMargin = 0
     self.RightMargin = 0
     self.BottomMargin = 0
     self.LeftMargin = 0
-  } 
+  }
+
+  if !strInArr(self.Pos, []string {"abs", "rel"}) {
+    self.Pos = "rel"
+  }
 }
