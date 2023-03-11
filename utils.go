@@ -16,3 +16,13 @@ func strArr2IntArr(list []string) (res []int, done bool) {
   }
   return res, true
 }
+
+func strInArr(item string, list []string) bool {
+  for _, i := range list {
+    if i == item {
+      return true
+    }
+  }
+
+  return false
+}
